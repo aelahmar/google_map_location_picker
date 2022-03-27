@@ -20,7 +20,7 @@ dependencies:
   geolocator: 8.2.0
   android_intent: 2.0.2
   provider: 6.0.2
-  http: 0.13.3
+  http: 0.13.4
   stack_trace: 1.10.0
   package_info: 2.0.2
 
