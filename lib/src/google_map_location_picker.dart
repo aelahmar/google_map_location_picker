@@ -495,7 +495,7 @@ Future<LocationResult?> showLocationPicker(
   );
 
   if (results != null && results.containsKey('location')) {
-    return results['location'];
+    return results;
   } else {
     return null;
   }
