@@ -24,6 +24,9 @@ class LocationResult {
   /// The human readable locality of the location.
   String? locality;
 
+  /// The human readable sublocality of the location. (neighborhood)
+  String? sublocality;
+
   /// Latitude/Longitude of the selected location.
   LatLng? latLng;
 

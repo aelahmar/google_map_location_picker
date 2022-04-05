@@ -288,6 +288,7 @@ class MapPickerState extends State<MapPicker> {
             responseJson['results'][0]['formatted_address'];
         String? road = '';
         String? locality = '';
+        String? sublocality = '';
 
         String? number = '';
         String? street = '';
@@ -305,10 +306,16 @@ class MapPickerState extends State<MapPicker> {
 
           if (types.contains('street_number') ||
               types.contains('premise') ||
-              types.contains('sublocality') ||
               types.contains('sublocality_level_2')) {
             if (number!.isEmpty) {
               number = item['long_name'];
+            }
+          }
+
+          if (types.contains('sublocality') ||
+              types.contains('sublocality_level_1')) {
+            if (sublocality!.isEmpty) {
+              sublocality = item['long_name'];
             }
           }
 
@@ -348,6 +355,7 @@ class MapPickerState extends State<MapPicker> {
           locationResult.formattedAddress = formattedAddress;
           locationResult.name = road;
           locationResult.locality = locality;
+          locationResult.sublocality = sublocality;
           locationResult.street = '$number $street';
           locationResult.state = state;
           locationResult.city = city;
