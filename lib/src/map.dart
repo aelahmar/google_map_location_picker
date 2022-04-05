@@ -131,6 +131,8 @@ class MapPickerState extends State<MapPicker> {
     }
   }
 
+  LocationResult? locationResult = LocationResult();
+
   @override
   Widget build(BuildContext context) {
     if (widget.requiredGPS!) {
@@ -233,6 +235,7 @@ class MapPickerState extends State<MapPicker> {
                         ],
                       ),
                       builder: (context, data) {
+                        locationResult = data;
                         _address = data?.name ?? data?.latLng.toString();
 
                         return Text(
@@ -246,10 +249,7 @@ class MapPickerState extends State<MapPicker> {
                   FloatingActionButton(
                     onPressed: () {
                       Navigator.of(context).pop({
-                        'location': LocationResult(
-                          latLng: locationProvider.lastIdleLocation,
-                          name: _address,
-                        )
+                        'location': locationResult,
                       });
                     },
                     child: widget.resultCardConfirmIcon ??
@@ -298,6 +298,7 @@ class MapPickerState extends State<MapPicker> {
         for (var i = 0; i < components.length; i++) {
           final item = components[i];
           List types = item['types'];
+
           if (types.contains('street_number') ||
               types.contains('premise') ||
               types.contains('sublocality') ||
@@ -306,6 +307,7 @@ class MapPickerState extends State<MapPicker> {
               number = item['long_name'];
             }
           }
+
           if (types.contains('route') || types.contains('neighborhood')) {
             if (street!.isEmpty) {
               street = item['long_name'];
