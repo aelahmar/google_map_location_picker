@@ -236,7 +236,9 @@ class MapPickerState extends State<MapPicker> {
                       ),
                       builder: (context, data) {
                         locationResult = data;
-                        _address = data?.name ?? data?.latLng.toString();
+                        _address = data?.formattedAddress ??
+                            data?.name ??
+                            data?.latLng.toString();
 
                         return Text(
                           _address ?? S.of(context).unnamedPlace,
@@ -282,6 +284,8 @@ class MapPickerState extends State<MapPicker> {
       if (response.statusCode == 200 &&
           responseJson['results'] is List &&
           List.from(responseJson['results']).isNotEmpty) {
+        String? formattedAddress =
+            responseJson['results'][0]['formatted_address'];
         String? road = '';
         String? locality = '';
 
@@ -341,6 +345,7 @@ class MapPickerState extends State<MapPicker> {
             }
           }
 
+          locationResult.formattedAddress = formattedAddress;
           locationResult.name = road;
           locationResult.locality = locality;
           locationResult.street = '$number $street';

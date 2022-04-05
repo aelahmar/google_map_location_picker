@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 /// The result returned after completing location selection.
 class LocationResult {
   LocationResult({
+    this.formattedAddress,
     this.name,
     this.locality,
     this.latLng,
@@ -12,6 +13,8 @@ class LocationResult {
     this.city,
     this.zip,
   });
+
+  String? formattedAddress;
 
   /// The human readable name of the location. This is primarily the
   /// name of the road. But in cases where the place was selected from Nearby
