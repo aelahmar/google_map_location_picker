@@ -329,28 +329,88 @@ class LocationPickerState extends State<LocationPicker> {
     final response = await http.get(Uri.parse(endpoint),
         headers: await (LocationUtils.getAppHeaders()));
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseJson = jsonDecode(response.body);
+    Map<String, dynamic> responseJson = jsonDecode(response.body);
+    if (response.statusCode == 200 &&
+        responseJson['results'] is List &&
+        List.from(responseJson['results']).isNotEmpty) {
+      String? road = '';
+      String? locality = '';
 
-      String? road;
+      String? number = '';
+      String? street = '';
+      String? state = '';
 
-      String? placeId = responseJson['results'][0]['place_id'];
+      String? city = '';
+      String? country = '';
+      String? zip = '';
 
-      if (responseJson['status'] == 'REQUEST_DENIED') {
-        road = 'REQUEST DENIED = please see log for more details';
-        print(responseJson['error_message']);
-      } else {
-        road = responseJson['results'][0]['formatted_address'];
+      List components = responseJson['results'][0]['address_components'];
+      for (var i = 0; i < components.length; i++) {
+        final item = components[i];
+        List types = item['types'];
+        if (types.contains('street_number') ||
+            types.contains('premise') ||
+            types.contains('sublocality') ||
+            types.contains('sublocality_level_2')) {
+          if (number!.isEmpty) {
+            number = item['long_name'];
+          }
+        }
+        if (types.contains('route') || types.contains('neighborhood')) {
+          if (street!.isEmpty) {
+            street = item['long_name'];
+          }
+        }
+        if (types.contains('administrative_area_level_1')) {
+          state = item['short_name'];
+        }
+        if (types.contains('administrative_area_level_2') ||
+            types.contains('administrative_area_level_3')) {
+          if (city!.isEmpty) {
+            city = item['long_name'];
+          }
+        }
+        if (types.contains('locality')) {
+          if (locality!.isEmpty) {
+            locality = item['short_name'];
+          }
+        }
+        if (types.contains('route')) {
+          if (road!.isEmpty) {
+            road = item['long_name'];
+          }
+        }
+        if (types.contains('country')) {
+          country = item['short_name'];
+          if (types.contains('postal_code')) {
+            if (zip!.isEmpty) {
+              zip = item['long_name'];
+            }
+          }
+        }
+
+        setState(() {
+          locationResult = LocationResult();
+          locationResult!.name = road;
+          locationResult!.locality = locality;
+          locationResult!.latLng = latLng;
+          locationResult!.street = '$number $street';
+          locationResult!.state = state;
+          locationResult!.city = city;
+          locationResult!.country = country;
+          locationResult!.zip = zip;
+        });
       }
-
-//      String locality =
-//          responseJson['results'][0]['address_components'][1]['short_name'];
-
+    } else {
       setState(() {
         locationResult = LocationResult();
-        locationResult!.address = road;
+        locationResult!.name = '';
         locationResult!.latLng = latLng;
-        locationResult!.placeId = placeId;
+        locationResult!.street = '';
+        locationResult!.state = '';
+        locationResult!.city = '';
+        locationResult!.country = '';
+        locationResult!.zip = '';
       });
     }
   }

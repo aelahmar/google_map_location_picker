@@ -80,8 +80,6 @@ class MapPickerState extends State<MapPicker> {
 
   String? _address;
 
-  String? _placeId;
-
   void _onToggleMapTypePressed() {
     final MapType nextType =
         MapType.values[(_currentMapType.index + 1) % MapType.values.length];
@@ -239,7 +237,7 @@ class MapPickerState extends State<MapPicker> {
                           return const SizedBox();
                         }
                         _address = data["address"];
-                        _placeId = data["placeId"];
+
                         return Text(
                           _address ?? S.of(context).unnamedPlace,
                           style: TextStyle(fontSize: 18),
@@ -253,8 +251,7 @@ class MapPickerState extends State<MapPicker> {
                       Navigator.of(context).pop({
                         'location': LocationResult(
                           latLng: locationProvider.lastIdleLocation,
-                          address: _address,
-                          placeId: _placeId,
+                          name: _address,
                         )
                       });
                     },
