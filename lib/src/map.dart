@@ -223,7 +223,7 @@ class MapPickerState extends State<MapPicker> {
                 children: <Widget>[
                   Flexible(
                     flex: 20,
-                    child: FutureLoadingBuilder<Map<String, String?>?>(
+                    child: FutureLoadingBuilder<LocationResult>(
                       future: getAddress(locationProvider.lastIdleLocation),
                       mutable: true,
                       loadingIndicator: Row(
@@ -233,10 +233,7 @@ class MapPickerState extends State<MapPicker> {
                         ],
                       ),
                       builder: (context, data) {
-                        if (data == null) {
-                          return const SizedBox();
-                        }
-                        _address = data["address"];
+                        _address = data.name ?? data.latLng.toString();
 
                         return Text(
                           _address ?? S.of(context).unnamedPlace,
@@ -267,7 +264,9 @@ class MapPickerState extends State<MapPicker> {
     );
   }
 
-  Future<Map<String, String?>> getAddress(LatLng? location) async {
+  Future<LocationResult> getAddress(LatLng? location) async {
+    LocationResult locationResult = LocationResult();
+
     try {
       final endpoint =
           'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}'
@@ -277,15 +276,85 @@ class MapPickerState extends State<MapPicker> {
               headers: await LocationUtils.getAppHeaders()))
           .body);
 
-      return {
-        "placeId": response['results'][0]['place_id'],
-        "address": response['results'][0]['formatted_address']
-      };
+      Map<String, dynamic> responseJson = jsonDecode(response.body);
+
+      if (response.statusCode == 200 &&
+          responseJson['results'] is List &&
+          List.from(responseJson['results']).isNotEmpty) {
+        String? road = '';
+        String? locality = '';
+
+        String? number = '';
+        String? street = '';
+        String? state = '';
+
+        String? city = '';
+        String? country = '';
+        String? zip = '';
+
+        List components = responseJson['results'][0]['address_components'];
+
+        for (var i = 0; i < components.length; i++) {
+          final item = components[i];
+          List types = item['types'];
+          if (types.contains('street_number') ||
+              types.contains('premise') ||
+              types.contains('sublocality') ||
+              types.contains('sublocality_level_2')) {
+            if (number!.isEmpty) {
+              number = item['long_name'];
+            }
+          }
+          if (types.contains('route') || types.contains('neighborhood')) {
+            if (street!.isEmpty) {
+              street = item['long_name'];
+            }
+          }
+          if (types.contains('administrative_area_level_1')) {
+            state = item['short_name'];
+          }
+          if (types.contains('administrative_area_level_2') ||
+              types.contains('administrative_area_level_3')) {
+            if (city!.isEmpty) {
+              city = item['long_name'];
+            }
+          }
+          if (types.contains('locality')) {
+            if (locality!.isEmpty) {
+              locality = item['short_name'];
+            }
+          }
+          if (types.contains('route')) {
+            if (road!.isEmpty) {
+              road = item['long_name'];
+            }
+          }
+          if (types.contains('country')) {
+            country = item['short_name'];
+            if (types.contains('postal_code')) {
+              if (zip!.isEmpty) {
+                zip = item['long_name'];
+              }
+            }
+          }
+
+          locationResult.name = road;
+          locationResult.locality = locality;
+          locationResult.latLng = location;
+          locationResult.street = '$number $street';
+          locationResult.state = state;
+          locationResult.city = city;
+          locationResult.country = country;
+          locationResult.zip = zip;
+        }
+      } else {
+        locationResult.latLng = location;
+      }
     } catch (e) {
-      print(e);
+      locationResult.latLng = location;
     }
 
-    return {"placeId": null, "address": null};
+    return locationResult;
   }
 
   Widget pin() {
