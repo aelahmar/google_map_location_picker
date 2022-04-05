@@ -6,6 +6,7 @@ class LocationResult {
     this.formattedAddress,
     this.name,
     this.locality,
+    this.sublocality,
     this.latLng,
     this.street,
     this.country,
@@ -42,6 +43,6 @@ class LocationResult {
 
   @override
   String toString() {
-    return 'LocationResult{formattedAddress: $formattedAddress, name: $name, locality: $locality, latLng: $latLng, street: $street, country: $country, state: $state, city: $city, zip: $zip}';
+    return 'LocationResult{formattedAddress: $formattedAddress, name: $name, locality: $locality, sublocality: $sublocality, latLng: $latLng, street: $street, country: $country, state: $state, city: $city, zip: $zip}';
   }
 }
