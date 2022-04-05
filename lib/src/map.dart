@@ -266,15 +266,16 @@ class MapPickerState extends State<MapPicker> {
 
   Future<LocationResult?> getAddress(LatLng? location) async {
     LocationResult locationResult = LocationResult();
+    locationResult.latLng = location;
 
     try {
       final endpoint =
-          'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}'
-          '&key=${widget.apiKey}&language=${widget.language}';
+          "https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}" +
+              "&key=${widget.apiKey}" +
+              "&language=${widget.language}";
 
-      final response = jsonDecode((await http.get(Uri.parse(endpoint),
-              headers: await LocationUtils.getAppHeaders()))
-          .body);
+      final response = await http.get(Uri.parse(endpoint),
+          headers: await (LocationUtils.getAppHeaders()));
 
       Map<String, dynamic> responseJson = jsonDecode(response.body);
 
@@ -340,18 +341,15 @@ class MapPickerState extends State<MapPicker> {
 
           locationResult.name = road;
           locationResult.locality = locality;
-          locationResult.latLng = location;
           locationResult.street = '$number $street';
           locationResult.state = state;
           locationResult.city = city;
           locationResult.country = country;
           locationResult.zip = zip;
         }
-      } else {
-        locationResult.latLng = location;
       }
     } catch (e) {
-      locationResult.latLng = location;
+      print(e);
     }
 
     return locationResult;
