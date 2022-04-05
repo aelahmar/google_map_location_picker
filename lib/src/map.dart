@@ -337,11 +337,11 @@ class MapPickerState extends State<MapPicker> {
             }
           }
           if (types.contains('country')) {
-            country = item['short_name'];
-            if (types.contains('postal_code')) {
-              if (zip!.isEmpty) {
-                zip = item['long_name'];
-              }
+            country = item['long_name'];
+          }
+          if (types.contains('postal_code')) {
+            if (zip!.isEmpty) {
+              zip = item['long_name'];
             }
           }
 
