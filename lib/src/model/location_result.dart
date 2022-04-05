@@ -36,4 +36,9 @@ class LocationResult {
   String? city;
 
   String? zip;
+
+  @override
+  String toString() {
+    return 'LocationResult{formattedAddress: $formattedAddress, name: $name, locality: $locality, latLng: $latLng, street: $street, country: $country, state: $state, city: $city, zip: $zip}';
+  }
 }
