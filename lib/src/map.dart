@@ -223,7 +223,7 @@ class MapPickerState extends State<MapPicker> {
                 children: <Widget>[
                   Flexible(
                     flex: 20,
-                    child: FutureLoadingBuilder<LocationResult>(
+                    child: FutureLoadingBuilder<LocationResult?>(
                       future: getAddress(locationProvider.lastIdleLocation),
                       mutable: true,
                       loadingIndicator: Row(
@@ -233,7 +233,7 @@ class MapPickerState extends State<MapPicker> {
                         ],
                       ),
                       builder: (context, data) {
-                        _address = data.name ?? data.latLng.toString();
+                        _address = data?.name ?? data?.latLng.toString();
 
                         return Text(
                           _address ?? S.of(context).unnamedPlace,
@@ -264,7 +264,7 @@ class MapPickerState extends State<MapPicker> {
     );
   }
 
-  Future<LocationResult> getAddress(LatLng? location) async {
+  Future<LocationResult?> getAddress(LatLng? location) async {
     LocationResult locationResult = LocationResult();
 
     try {
