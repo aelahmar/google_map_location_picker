@@ -441,7 +441,7 @@ class MapPickerState extends State<MapPicker> {
                 child: Text(S.of(context).ok),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
-                  _initCurrentLocation();
+                  Geolocator.openAppSettings();
                   dialogOpen = null;
                 },
               ),
